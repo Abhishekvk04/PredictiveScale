@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: predictor
+  namespace: autoscaler-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: predictor
+  template:
+    metadata:
+      labels:
+        app: predictor
+    spec:
+      containers:
+      - name: predictor
+        image: autoscaler-predictor:0.1
+        env:
+          - name: PROM_URL
+            value: "http://prometheus-kube-prometheus-prometheus.autoscaler-demo.svc:9090"
+          - name: PULL_N
+            value: "10"
+        ports:
+        - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: predictor
+  namespace: autoscaler-demo
+  labels:
+    app: predictor
+spec:
+  selector:
+    app: predictor
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8000
+  type: ClusterIP

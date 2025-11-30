@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: demo-app-monitor
+  namespace: autoscaler-demo
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: demo-app
+  namespaceSelector:
+    matchNames:
+      - autoscaler-demo
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s

@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: actuator
+  namespace: autoscaler-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: actuator
+  template:
+    metadata:
+      labels:
+        app: actuator
+    spec:
+      containers:
+      - name: actuator
+        image: autoscaler-actuator:0.1
+        env:
+          - name: DECISION_URL
+            value: "http://decision.autoscaler-demo.svc/decide"
+          - name: DEPLOYMENT
+            value: "demo-app"
+          - name: NAMESPACE
+            value: "autoscaler-demo"
+          - name: COOLDOWN
+            value: "60"
+          - name: SIMULATE
+            value: "true"    # KEEP true for now (simulation)

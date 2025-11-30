@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: actuator-sa
+  namespace: autoscaler-demo
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: actuator-role
+  namespace: autoscaler-demo
+rules:
+- apiGroups: ["apps"]
+  resources: ["deployments", "deployments/scale"]
+  verbs: ["get", "patch", "update", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: actuator-binding
+  namespace: autoscaler-demo
+subjects:
+- kind: ServiceAccount
+  name: actuator-sa
+  namespace: autoscaler-demo
+roleRef:
+  kind: Role
+  name: actuator-role
+  apiGroup: rbac.authorization.k8s.io

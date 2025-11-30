@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: decision
+  namespace: autoscaler-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: decision
+  template:
+    metadata:
+      labels:
+        app: decision
+    spec:
+      containers:
+      - name: decision
+        image: autoscaler-decision:0.1
+        env:
+          - name: PREDICTOR_URL
+            value: "http://predictor.autoscaler-demo.svc"
+          - name: PER_POD_CAPACITY
+            value: "20.0"
+          - name: SAFETY_FACTOR
+            value: "1.2"
+          - name: MIN_REPLICAS
+            value: "1"
+          - name: MAX_REPLICAS
+            value: "10"
+        ports:
+        - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: decision
+  namespace: autoscaler-demo
+  labels:
+    app: decision
+spec:
+  selector:
+    app: decision
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8000
+  type: ClusterIP

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: predictor-poller
+  namespace: autoscaler-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: predictor-poller
+  template:
+    metadata:
+      labels:
+        app: predictor-poller
+    spec:
+      containers:
+      - name: poller
+        image: curlimages/curl:8.3.0
+        command: ["/bin/sh","-c"]
+        args:
+          - 'while true; do curl -s http://predictor:80/predict >/dev/null; sleep 15; done'
